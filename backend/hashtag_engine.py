@@ -1,87 +1,56 @@
 import re
 
-# ----------------------------
-# STOPWORDS
-# ----------------------------
 STOPWORDS = {
-    "is", "am", "are", "was", "were", "be", "being", "been",
-    "using", "use", "based", "on", "in", "at", "to", "for",
-    "and", "or", "of", "a", "an", "the", "with", "by"
+    "is","am","are","was","were","be","being","been",
+    "using","use","based","on","in","at","to","for",
+    "and","or","of","a","an","the","with","by"
 }
 
-# ----------------------------
-# CLEAN TEXT
-# ----------------------------
-def clean_text(text: str):
-    text = text.lower()
-    return re.sub(r"[^a-z0-9\s]", "", text)
+def clean(text):
+    return re.sub(r"[^a-z0-9\s]", "", text.lower())
 
-# ----------------------------
-# TOKENIZE
-# ----------------------------
-def tokenize(text: str):
-    words = clean_text(text).split()
+def tokens(text):
+    words = clean(text).split()
     return [w for w in words if w not in STOPWORDS and len(w) > 2]
 
-# ----------------------------
-# DOMAIN INTELLIGENCE LAYER
-# ----------------------------
-def apply_domain_logic(text: str, hashtags: set):
-    t = text.lower()
-
-    # AI domain
-    if "ai" in t or "artificial intelligence" in t:
-        hashtags.add("#AI")
-        hashtags.add("#ArtificialIntelligence")
-        hashtags.add("#MachineLearning")
-
-    # Chatbot
-    if "chatbot" in t:
-        hashtags.add("#Chatbot")
-
-    # Customer support
-    if "customer support" in t:
-        hashtags.add("#CustomerSupport")
-
-    # IoT normalization (fix duplicates)
-    if "iot" in t:
-        hashtags.discard("#Iot")
-        hashtags.discard("#iOT")
-        hashtags.add("#IoT")
-
-    # Agriculture domain upgrade
-    if "agriculture" in t or "farming" in t:
-        hashtags.add("#Agriculture")
-        hashtags.add("#AgriTech")
-        hashtags.add("#SmartFarming")
-
-    # Tech base tags
-    hashtags.add("#Technology")
-    hashtags.add("#Innovation")
-
-    return hashtags
-
-# ----------------------------
-# MAIN FUNCTION
-# ----------------------------
 def generate_hashtags(text: str):
-    words = tokenize(text)
+    t = text.lower()
+    words = tokens(text)
 
-    hashtags = set()
+    tags = set()
 
-    # word-level hashtags (clean only)
+    # ---------------- WORD TAGS ----------------
     for w in words:
         if w == "ai":
-            hashtags.add("#AI")
+            tags.add("#AI")
+        elif w == "iot":
+            tags.add("#IoT")
         else:
-            hashtags.add("#" + w.capitalize())
+            tags.add("#" + w.capitalize())
 
-    # apply domain intelligence
-    hashtags = apply_domain_logic(text, hashtags)
+    # ---------------- DOMAIN LOGIC ----------------
+    if "ai" in t:
+        tags.update(["#ArtificialIntelligence", "#MachineLearning"])
 
-    # remove noisy generic tags (quality control)
-    noisy = {"#Smart", "#System", "#Based", "#Using"}
+    if "chatbot" in t:
+        tags.add("#Chatbot")
 
-    hashtags = hashtags - noisy
+    if "customer support" in t:
+        tags.add("#CustomerSupport")
 
-    return list(hashtags)[:12]
+    if "agriculture" in t or "farming" in t:
+        tags.update(["#Agriculture", "#AgriTech", "#SmartFarming"])
+
+    # ---------------- CLEANING BAD TAGS ----------------
+    remove = {"#Smart", "#System", "#Based", "#Using", "#Iot"}
+    tags = tags - remove
+
+    # ensure correct IoT format
+    if "iot" in t:
+        tags.add("#IoT")
+
+    # core tags
+    tags.add("#Technology")
+    tags.add("#Innovation")
+
+    return list(tags)[:12]
