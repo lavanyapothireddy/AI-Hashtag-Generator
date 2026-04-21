@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from ai_engine import generate_hashtags_ai
+from hashtag_engine import generate_hashtags
 
 app = FastAPI()
 
@@ -17,5 +17,5 @@ class Request(BaseModel):
 
 @app.post("/generate")
 def generate(req: Request):
-    tags = generate_hashtags_ai(req.text)
+    tags = generate_hashtags(req.text)
     return {"hashtags": tags}
