@@ -1,24 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>AI Hashtag Generator</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>AI Hashtag Generator</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    <h1>🧠 AI Hashtag Generator</h1>
+  <div class="container">
+    <h1>AI Hashtag Generator 🚀</h1>
 
-    <textarea id="inputText" placeholder="Enter your text..."></textarea>
+    <input id="textInput" type="text" placeholder="Enter your text..." />
 
-    <button onclick="generateHashtags()">Generate</button>
+    <div class="buttons">
+      <button onclick="generateHashtags()">Generate</button>
+      <button onclick="copyAll()">Copy All</button>
+    </div>
 
-    <h3>Generated Hashtags:</h3>
-    <div id="output"></div>
+    <div id="tagContainer" class="tags"></div>
+  </div>
 
-    <button onclick="copyTags()">Copy All</button>
-</div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
