@@ -1,22 +1,53 @@
-async function generateHashtags() {
-    const text = document.getElementById("inputText").value;
+const API_URL = "https://ai-hashtag-generator.onrender.com/generate";
 
-    const response = await fetch("http://127.0.0.1:8000/generate", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ text })
+let latestTags = [];
+
+async function generateHashtags() {
+  const text = document.getElementById("textInput").value;
+
+  if (!text) {
+    alert("Please enter text");
+    return;
+  }
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ text })
     });
 
-    const data = await response.json();
+    const data = await res.json();
+    latestTags = data.hashtags;
 
-    document.getElementById("output").innerHTML =
-        data.hashtags.map(tag => `<p>${tag}</p>`).join("");
+    displayTags(latestTags);
+
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Failed to generate hashtags");
+  }
 }
 
-function copyTags() {
-    const tags = document.getElementById("output").innerText;
-    navigator.clipboard.writeText(tags);
-    alert("Copied hashtags!");
+function displayTags(tags) {
+  const container = document.getElementById("tagContainer");
+  container.innerHTML = "";
+
+  tags.forEach(tag => {
+    const div = document.createElement("div");
+    div.className = "tag";
+    div.innerText = tag;
+    container.appendChild(div);
+  });
+}
+
+function copyAll() {
+  if (latestTags.length === 0) {
+    alert("No hashtags to copy");
+    return;
+  }
+
+  navigator.clipboard.writeText(latestTags.join(" "));
+  alert("Copied all hashtags!");
 }
